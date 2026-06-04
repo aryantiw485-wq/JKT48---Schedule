@@ -1,4 +1,9 @@
 import os
+
+print("DEBUG START")
+print(os.environ.keys())
+print("DEBUG END")
+import os
 import json
 from datetime import datetime, timedelta
 from google.oauth2 import service_account
