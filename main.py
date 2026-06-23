@@ -2,21 +2,6 @@ from datetime import datetime
 import requests
 import xml.etree.ElementTree as ET
 
-bulan = {
-    "Januari": "January",
-    "Februari": "February",
-    "Maret": "March",
-    "April": "April",
-    "Mei": "May",
-    "Juni": "June",
-    "Juli": "July",
-    "Agustus": "August",
-    "September": "September",
-    "Oktober": "October",
-    "November": "November",
-    "Desember": "December"
-}
-
 url = "https://nitter.net/moshi2jkt48/rss"
 
 headers = {
@@ -30,6 +15,8 @@ root = ET.fromstring(r.text)
 
 items = root.findall(".//item")
 
+ada_gita = False
+
 for item in items:
     title = item.find("title")
 
@@ -39,6 +26,9 @@ for item in items:
     text = title.text
 
     if "Gita" in text:
-    print("⭐ AKAN BUAT EVENT ⭐")
-else:
+        ada_gita = True
+        print("⭐ AKAN BUAT EVENT ⭐")
+        print(text)
+
+if not ada_gita:
     print("Tidak ada Gita, tidak membuat event.")
