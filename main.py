@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 import re
 
 
+# Nama yang dicari
 TARGET_MEMBER = [
     "Gita",
     "Gita Sekar Andarini"
@@ -18,23 +19,23 @@ HEADERS = {
 
 print("🔄 Mengambil RSS Moshi...")
 
-response = requests.get(URL, headers=HEADERS, timeout=30)
+
+response = requests.get(
+    URL,
+    headers=HEADERS,
+    timeout=30
+)
+
 
 print("Status RSS:", response.status_code)
-
-if response.status_code != 200:
-    print("❌ Gagal mengambil RSS")
-    exit()
 
 
 root = ET.fromstring(response.text)
 
 items = root.findall(".//item")
 
+
 print("Jumlah item RSS:", len(items))
-
-
-ada_jadwal = False
 
 
 for item in items:
@@ -44,15 +45,13 @@ for item in items:
     if title is None:
         continue
 
+
     text = title.text or ""
 
 
-    # hanya cek pengumuman member tampil
+    # Cari tweet daftar member
     if "Berikut adalah member yang akan tampil" not in text:
         continue
-
-
-    ada_jadwal = True
 
 
     print("\n==========================")
@@ -60,21 +59,21 @@ for item in items:
     print("==========================")
 
 
-    # Ambil member setelah WIB
+    # Ambil daftar member
     member_match = re.search(
         r"WIB\s+(.*)",
         text
     )
 
-    member_list = (
-        member_match.group(1)
-        if member_match
-        else ""
-    )
+
+    if member_match:
+        member_list = member_match.group(1)
+    else:
+        member_list = ""
 
 
     # Cek Gita
-    gita_tampil = any(
+    ada_gita = any(
         nama.lower() in member_list.lower()
         for nama in TARGET_MEMBER
     )
@@ -122,14 +121,14 @@ for item in items:
     )
 
 
-    if gita_tampil:
-        print("⭐ STATUS : GITA TAMPIL ⭐")
+    # Bagian latihan kita
+    print(
+        "Apakah Gita dicari? :",
+        ada_gita
+    )
+
+
+    if ada_gita:
+        print("⭐ GITA TAMPIL ⭐")
     else:
-        print("STATUS : Bukan Gita")
-
-
-if not ada_jadwal:
-    print("\n⚠️ Tidak ada jadwal member ditemukan")
-
-print("Member :", member_list)
-print("Apakah Gita dicari? :", ada_gita)
+        print("❌ Bukan Gita")
