@@ -14,16 +14,22 @@ root = ET.fromstring(r.text)
 
 items = root.findall(".//item")
 
-print("Jumlah item:", len(items))
-print()
-
-for i, item in enumerate(items[:20], start=1):
+for item in items:
     title = item.find("title")
 
-    print("=" * 50)
-    print(f"ITEM {i}")
+    if title is None:
+        continue
 
-    if title is not None:
-        print(title.text[:300])
+    text = title.text
 
-    print()
+    if "Berikut adalah member yang akan tampil" in text:
+
+        if "Gita" in text:
+            print("⭐ GITA DITEMUKAN ⭐")
+            print(text)
+            print()
+
+        else:
+            print("Tidak ada Gita:")
+            print(text[:200])
+            print()
