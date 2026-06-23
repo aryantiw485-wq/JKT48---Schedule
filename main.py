@@ -3,6 +3,9 @@ import xml.etree.ElementTree as ET
 import re
 
 
+MODE_TEST = True
+
+
 # Nama yang dicari
 TARGET_MEMBER = [
     "Gita",
@@ -79,6 +82,11 @@ for item in items:
     )
 
 
+    # MODE LATIHAN
+    if MODE_TEST:
+        ada_gita = True
+
+
     # Ambil show
     show = re.search(
         r"pertunjukan (.*?) \|",
@@ -121,7 +129,6 @@ for item in items:
     )
 
 
-    # Bagian latihan kita
     print(
         "Apakah Gita dicari? :",
         ada_gita
