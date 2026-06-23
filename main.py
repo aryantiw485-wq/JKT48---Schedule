@@ -17,13 +17,9 @@ items = root.findall(".//item")
 print("Jumlah item:", len(items))
 print()
 
-for item in items:
-    title = item.find("title")
+item = items[0]
 
-    if title is not None:
-        text = title.text
-
-        if "gita" in text.lower():
-            print("=== DITEMUKAN GITA ===")
-            print(text)
-            print()
+for child in item:
+    print("TAG:", child.tag)
+    print("ISI:", str(child.text)[:500])
+    print("-" * 50)
