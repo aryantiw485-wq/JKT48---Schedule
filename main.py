@@ -1,5 +1,21 @@
+from datetime import datetime
 import requests
 import xml.etree.ElementTree as ET
+
+bulan = {
+    "Januari": "January",
+    "Februari": "February",
+    "Maret": "March",
+    "April": "April",
+    "Mei": "May",
+    "Juni": "June",
+    "Juli": "July",
+    "Agustus": "August",
+    "September": "September",
+    "Oktober": "October",
+    "November": "November",
+    "Desember": "December"
+}
 
 url = "https://nitter.net/moshi2jkt48/rss"
 
@@ -33,8 +49,15 @@ for item in items:
 
         tanggal = parts[1].strip()
 
-        jam = parts[2].split("WIB")[0].strip() + " WIB"
+        jam = parts[2].split("WIB")[0].strip()
 
-        print("SHOW    :", show)
-        print("TANGGAL :", tanggal)
-        print("JAM     :", jam)
+        for indo, eng in bulan.items():
+            tanggal = tanggal.replace(indo, eng)
+
+        waktu = datetime.strptime(
+            f"{tanggal} {jam}",
+            "%d %B %Y %H.%M"
+        )
+
+        print("SHOW :", show)
+        print("DATETIME :", waktu)
