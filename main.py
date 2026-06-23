@@ -38,26 +38,7 @@ for item in items:
 
     text = title.text
 
-    if "Berikut adalah member yang akan tampil" in text:
-
-        parts = text.split("|")
-
-        show = parts[0].replace(
-            "R to @moshi2jkt48: Berikut adalah member yang akan tampil pada pertunjukan",
-            ""
-        ).strip()
-
-        tanggal = parts[1].strip()
-
-        jam = parts[2].split("WIB")[0].strip()
-
-        for indo, eng in bulan.items():
-            tanggal = tanggal.replace(indo, eng)
-
-        waktu = datetime.strptime(
-            f"{tanggal} {jam}",
-            "%d %B %Y %H.%M"
-        )
-
-        print("SHOW :", show)
-        print("DATETIME :", waktu)
+    if "Gita" in text:
+    print("⭐ AKAN BUAT EVENT ⭐")
+else:
+    print("Tidak ada Gita, tidak membuat event.")
