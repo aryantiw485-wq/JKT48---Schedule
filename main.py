@@ -24,15 +24,7 @@ for item in items:
 
     text = title.text
 
-    if (
-        "Berikut adalah member yang akan tampil" in text
-        and "Gita" in text
-    ):
-        ditemukan = True
-
-        print("⭐ GITA DITEMUKAN ⭐")
-        print(text)
+    if "Berikut adalah member yang akan tampil" in text:
         print()
-
-if not ditemukan:
-    print("Belum ada member list yang berisi Gita di 20 posting terakhir.")
+        print("=" * 80)
+        print(text)
