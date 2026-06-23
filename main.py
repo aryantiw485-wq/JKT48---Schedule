@@ -20,9 +20,9 @@ ada_gita = False
 for item in items:
     title = item.find("title")
 
-    if title is None:
-        continue
-
+    if title is not None:
+        print(title.text)
+        
     text = title.text
 
     if "Gita" in text:
