@@ -30,19 +30,28 @@ for item in items:
     if title is None:
         continue
 
-    text = title.text
+    text = title.text or ""
 
 
     if "Berikut adalah member yang akan tampil" not in text:
         continue
 
 
-    # Ambil bagian setelah WIB (daftar member)
-    member_list = text.split("WIB")[-1]
+    # ambil member setelah jam
+    match_member = re.search(
+        r"WIB\s+(.*)",
+        text
+    )
+
+    if not match_member:
+        continue
+
+
+    member_list = match_member.group(1)
 
 
     ada_gita = any(
-        nama in member_list
+        nama.lower() in member_list.lower()
         for nama in TARGET_MEMBER
     )
 
@@ -66,6 +75,23 @@ for item in items:
 
 
         print("⭐ GITA TAMPIL ⭐")
-        print("Show   :", show.group(1))
-        print("Tanggal:", tanggal.group(1))
-        print("Jam    :", jam.group(1))
+
+        print(
+            "Show   :",
+            show.group(1) if show else "-"
+        )
+
+        print(
+            "Tanggal:",
+            tanggal.group(1) if tanggal else "-"
+        )
+
+        print(
+            "Jam    :",
+            jam.group(1) if jam else "-"
+        )
+
+        print(
+            "Member :",
+            member_list
+        )
