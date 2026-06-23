@@ -17,9 +17,13 @@ items = root.findall(".//item")
 print("Jumlah item:", len(items))
 print()
 
-item = items[0]
+for i, item in enumerate(items[:20], start=1):
+    title = item.find("title")
 
-for child in item:
-    print("TAG:", child.tag)
-    print("ISI:", str(child.text)[:500])
-    print("-" * 50)
+    print("=" * 50)
+    print(f"ITEM {i}")
+
+    if title is not None:
+        print(title.text[:300])
+
+    print()
