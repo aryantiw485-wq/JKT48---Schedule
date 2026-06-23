@@ -1,15 +1,29 @@
 import requests
+import xml.etree.ElementTree as ET
 
 url = "https://nitter.net/moshi2jkt48/rss"
 
 headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0 Safari/537.36",
-    "Accept": "application/rss+xml,application/xml,text/xml,*/*",
-    "Accept-Language": "en-US,en;q=0.9"
+    "User-Agent": "Mozilla/5.0",
+    "Accept": "application/rss+xml,application/xml,text/xml,*/*"
 }
 
-r = requests.get(url, headers=headers, timeout=30)
+r = requests.get(url, headers=headers)
 
-print("STATUS:", r.status_code)
-print("PANJANG:", len(r.text))
-print("CONTENT:", repr(r.text[:200]))
+root = ET.fromstring(r.text)
+
+items = root.findall(".//item")
+
+print("Jumlah item:", len(items))
+print()
+
+for item in items:
+    title = item.find("title")
+
+    if title is not None:
+        text = title.text
+
+        if "gita" in text.lower():
+            print("=== DITEMUKAN GITA ===")
+            print(text)
+            print()
