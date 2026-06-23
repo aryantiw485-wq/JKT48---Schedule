@@ -130,3 +130,6 @@ for item in items:
 
 if not ada_jadwal:
     print("\n⚠️ Tidak ada jadwal member ditemukan")
+
+print("Member :", member_list)
+print("Apakah Gita dicari? :", ada_gita)
