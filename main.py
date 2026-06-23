@@ -23,6 +23,13 @@ for item in items:
     text = title.text
 
     if "Berikut adalah member yang akan tampil" in text:
-        print("=== MEMBER LIST ===")
-        print(repr(text))
+
+        parts = text.split("|")
+
+        print("JUMLAH BAGIAN:", len(parts))
         print()
+
+        for i, part in enumerate(parts):
+            print(f"BAGIAN {i}:")
+            print(part.strip())
+            print()
