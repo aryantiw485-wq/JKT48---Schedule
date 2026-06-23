@@ -26,10 +26,15 @@ for item in items:
 
         parts = text.split("|")
 
-        print("JUMLAH BAGIAN:", len(parts))
-        print()
+        show = parts[0].replace(
+            "R to @moshi2jkt48: Berikut adalah member yang akan tampil pada pertunjukan",
+            ""
+        ).strip()
 
-        for i, part in enumerate(parts):
-            print(f"BAGIAN {i}:")
-            print(part.strip())
-            print()
+        tanggal = parts[1].strip()
+
+        jam = parts[2].split("WIB")[0].strip() + " WIB"
+
+        print("SHOW    :", show)
+        print("TANGGAL :", tanggal)
+        print("JAM     :", jam)
