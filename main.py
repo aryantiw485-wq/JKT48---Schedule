@@ -49,12 +49,14 @@ for item in items:
         continue
 
 
-    text = title.text or ""
+text = title.text or ""
+
+print("RSS:", text)
 
 
-    # Cari tweet daftar member
-    if "Berikut adalah member yang akan tampil" not in text:
-        continue
+ # Cari tweet daftar member
+if "Berikut adalah member yang akan tampil" not in text:
+    continue
 
 
     print("\n==========================")
