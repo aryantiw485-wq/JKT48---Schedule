@@ -52,7 +52,7 @@ items = root.findall(".//item")
 
 print("Jumlah item RSS:", len(items))
 
-MODE_TEST = True
+MODE_TEST = False
 
 for item in items:
 
