@@ -48,21 +48,17 @@ for item in items:
     if title is None:
         continue
 
+    text = title.text or ""
 
-text = title.text or ""
+    print("RSS:", text)
 
-print("RSS:", text)
-
-
- # Cari tweet daftar member
-if "Berikut adalah member yang akan tampil" not in text:
-    continue
-
+    # Cari tweet daftar member
+    if "Berikut adalah member yang akan tampil" not in text:
+        continue
 
     print("\n==========================")
     print("📌 Jadwal ditemukan")
     print("==========================")
-
 
     # Ambil daftar member
     member_match = re.search(
