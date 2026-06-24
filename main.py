@@ -1,6 +1,11 @@
 import requests
 import xml.etree.ElementTree as ET
 import re
+import os
+import json
+
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
 
 print("🔄 Mengambil RSS Moshi...")
 
@@ -19,9 +24,6 @@ items = root.findall(".//item")
 
 print("Jumlah item RSS:", len(items))
 
-# ==========================
-# MODE TEST
-# ==========================
 MODE_TEST = True
 
 for item in items:
@@ -111,6 +113,27 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
 
         print("\n📅 DATA EVENT")
         print(event_data)
+
+        print("\n🚀 Menghubungkan ke Google Calendar...")
+
+        creds_json = json.loads(
+            os.environ["GOOGLE_CREDENTIALS"]
+        )
+
+        credentials = service_account.Credentials.from_service_account_info(
+            creds_json,
+            scopes=[
+                "https://www.googleapis.com/auth/calendar"
+            ]
+        )
+
+        service = build(
+            "calendar",
+            "v3",
+            credentials=credentials
+        )
+
+        print("✅ Berhasil terhubung ke Google Calendar")
 
     else:
         print("❌ Bukan Gita")
