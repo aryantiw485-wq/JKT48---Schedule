@@ -29,10 +29,13 @@ MODE_TEST = True
 for item in items:
 
     if MODE_TEST:
+
         text = """
 Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat Tanganku | 25 Juni 2026 | 19.00 WIB Gita Sekar Andarini, Christy, Lulu
 """
+
     else:
+
         title = item.find("title")
 
         if title is None:
@@ -131,15 +134,27 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
             }
         }
 
-        created_event = service.events().insert(
+        existing_events = service.events().list(
             calendarId=calendar_id,
-            body=event
+            q=event_data["title"]
         ).execute()
 
-        print("🎉 EVENT BERHASIL DIBUAT")
-        print(created_event["htmlLink"])
+        if existing_events.get("items"):
+
+            print("⚠️ Event sudah ada, dilewati")
+
+        else:
+
+            created_event = service.events().insert(
+                calendarId=calendar_id,
+                body=event
+            ).execute()
+
+            print("🎉 EVENT BERHASIL DIBUAT")
+            print(created_event["htmlLink"])
 
     else:
+
         print("❌ Bukan Gita")
 
     if MODE_TEST:
