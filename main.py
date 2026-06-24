@@ -19,6 +19,8 @@ items = root.findall(".//item")
 
 print("Jumlah item RSS:", len(items))
 
+MODE_TEST = True
+
 for item in items:
 
     title = item.find("title")
@@ -26,12 +28,13 @@ for item in items:
     if title is None:
         continue
 
-    # ==========================
-    # MODE TEST
-    # ==========================
-    text = """
+    if MODE_TEST:
+        text = """
 Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat Tanganku | 25 Juni 2026 | 19.00 WIB Gita Sekar Andarini, Christy, Lulu
 """
+        MODE_TEST = False
+    else:
+        continue
 
     print("\n==========================")
     print("📌 Jadwal ditemukan")
@@ -88,7 +91,6 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
         "Apakah Gita dicari? :",
         ada_gita
     )
-
 if ada_gita:
     print("⭐ GITA TAMPIL ⭐")
 
