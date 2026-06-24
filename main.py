@@ -134,14 +134,31 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
             }
         }
 
-        existing_events = service.events().list(
+               existing_events = service.events().list(
             calendarId=calendar_id,
             q=event_data["title"]
         ).execute()
 
-        if existing_events.get("items"):
+
+        event_sudah_ada = False
+
+
+        for old_event in existing_events.get("items", []):
+
+            old_start = old_event.get("start", {}).get("dateTime")
+
+
+            if old_start == event["start"]["dateTime"]:
+
+                event_sudah_ada = True
+                break
+
+
+
+        if event_sudah_ada:
 
             print("⚠️ Event sudah ada, dilewati")
+
 
         else:
 
@@ -152,7 +169,6 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
 
             print("🎉 EVENT BERHASIL DIBUAT")
             print(created_event["htmlLink"])
-
     else:
 
         print("❌ Bukan Gita")
