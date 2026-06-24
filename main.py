@@ -116,103 +116,109 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
 
         print("⭐ GITA TAMPIL ⭐")
 
-        event_data = {
-            "title": f"⭐ JKT48 Theater - {show.group(1)}",
-            "date": tanggal.group(1),
-            "time": jam.group(1),
-            "member": member_list
-        }
+        judul = f"⭐ GITA TAMPIL - {show.group(1)}"
 
-        print("\n📅 DATA EVENT")
-        print(event_data)
+    else:
 
-        print("\n🚀 Menghubungkan ke Google Calendar...")
+        print("📅 Theater tanpa Gita")
 
-        creds_json = json.loads(
+        judul = f"JKT48 Theater - {show.group(1)}"
+
+
+    event_data = {
+        "title": judul,
+        "date": tanggal.group(1),
+        "time": jam.group(1),
+        "member": member_list
+    }
+
+    print("\n📅 DATA EVENT")
+    print(event_data)
+
+    print("\n🚀 Menghubungkan ke Google Calendar...")
+
+    creds_json = json.loads(
             os.environ["GOOGLE_CREDENTIALS"]
         )
 
-        credentials = service_account.Credentials.from_service_account_info(
+    credentials = service_account.Credentials.from_service_account_info(
             creds_json,
             scopes=[
                 "https://www.googleapis.com/auth/calendar"
             ]
         )
 
-        service = build(
+    service = build(
             "calendar",
             "v3",
             credentials=credentials
         )
 
-        print("✅ Berhasil terhubung ke Google Calendar")
+    print("✅ Berhasil terhubung ke Google Calendar")
 
-        calendar_id = os.environ["CALENDAR_ID_THEATER"]
+    calendar_id = os.environ["CALENDAR_ID_THEATER"]
 
-        waktu_mulai = ubah_tanggal(
-            event_data["date"],
-            event_data["time"]
-        )
-
-
-        waktu_selesai = ubah_tanggal(
-            event_data["date"],
-            event_data["time"]
-        )
+    waktu_mulai = ubah_tanggal(
+        event_data["date"],
+        event_data["time"]
+    )
 
 
-        event = {
-            "summary": event_data["title"],
-            "description": event_data["member"],
-            "start": {
+    waktu_selesai = ubah_tanggal(
+        event_data["date"],
+        event_data["time"]
+    )
+
+
+    event = {
+        "summary": event_data["title"],
+        "description": event_data["member"],
+        "start": {
                 "dateTime": waktu_mulai,
                 "timeZone": "Asia/Jakarta"
-            },
-            "end": {
+        },
+        "end": {
                 "dateTime": waktu_selesai,
                 "timeZone": "Asia/Jakarta"
-            }
         }
+    }
 
 
-        existing_events = service.events().list(
-            calendarId=calendar_id,
-            q=event_data["title"]
-        ).execute()
+    existing_events = service.events().list(
+        calendarId=calendar_id,
+        q=event_data["title"]
+    ).execute()
 
 
-        event_sudah_ada = False
+    event_sudah_ada = False
 
 
-        for old_event in existing_events.get("items", []):
+    for old_event in existing_events.get("items", []):
 
-            old_start = old_event.get("start", {}).get("dateTime")
-
-
-            if old_start == event["start"]["dateTime"]:
-
-                event_sudah_ada = True
-                break
+        old_start = old_event.get("start", {}).get("dateTime")
 
 
+        if old_start == event["start"]["dateTime"]:
 
-        if event_sudah_ada:
+            event_sudah_ada = True
+            break
 
-            print("⚠️ Event sudah ada, dilewati")
 
 
-        else:
+    if event_sudah_ada:
 
-            created_event = service.events().insert(
-                calendarId=calendar_id,
-                body=event
-            ).execute()
+        print("⚠️ Event sudah ada, dilewati")
 
-            print("🎉 EVENT BERHASIL DIBUAT")
-            print(created_event["htmlLink"])
+
     else:
 
-        print("❌ Bukan Gita")
+        created_event = service.events().insert(
+            calendarId=calendar_id,
+            body=event
+        ).execute()
+
+        print("🎉 EVENT BERHASIL DIBUAT")
+        print(created_event["htmlLink"])
 
     if MODE_TEST:
         break
