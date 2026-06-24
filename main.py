@@ -103,7 +103,28 @@ if ada_gita:
 
     print("\n📅 DATA EVENT")
     print(event_data)
+    
+import os
+import json
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
 
+print("\n🚀 Menghubungkan ke Google Calendar...")
+
+creds_json = json.loads(os.environ["GOOGLE_CREDENTIALS"])
+
+credentials = service_account.Credentials.from_service_account_info(
+    creds_json,
+    scopes=["https://www.googleapis.com/auth/calendar"]
+)
+
+service = build(
+    "calendar",
+    "v3",
+    credentials=credentials
+)
+
+print("✅ Berhasil terhubung")
     print("\n🚀 Mencoba membuat event kalender...")
 
 else:
