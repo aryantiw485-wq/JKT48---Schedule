@@ -89,18 +89,20 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
         ada_gita
     )
 
-    if ada_gita:
+   if ada_gita:
+    print("⭐ GITA TAMPIL ⭐")
 
-        print("⭐ GITA TAMPIL ⭐")
+    event_data = {
+        "title": f"⭐ JKT48 Theater - {show.group(1)}",
+        "date": tanggal.group(1),
+        "time": jam.group(1),
+        "member": member_list
+    }
 
-        event_data = {
-            "title": f"⭐ JKT48 Theater - {show.group(1)}",
-            "date": tanggal.group(1),
-            "time": jam.group(1),
-            "member": member_list
-        }
+    print("\n📅 DATA EVENT")
+    print(event_data)
 
-       print("\n📅 DATA EVENT")
-print(event_data)
+    print("\n🚀 Mencoba membuat event kalender...")
 
-print("\n🚀 Mencoba membuat event kalender...")
+else:
+    print("❌ Bukan Gita")
