@@ -4,6 +4,34 @@ import re
 import os
 import json
 
+bulan = {
+    "Januari": "01",
+    "Februari": "02",
+    "Maret": "03",
+    "April": "04",
+    "Mei": "05",
+    "Juni": "06",
+    "Juli": "07",
+    "Agustus": "08",
+    "September": "09",
+    "Oktober": "10",
+    "November": "11",
+    "Desember": "12"
+}
+
+def ubah_tanggal(tanggal, jam):
+
+    hari, nama_bulan, tahun = tanggal.split()
+
+    bulan_angka = bulan[nama_bulan]
+
+    jam_baru = jam.replace(".", ":")
+
+    return (
+        f"{tahun}-{bulan_angka}-{hari}T"
+        f"{jam_baru}:00+07:00"
+    )
+
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
@@ -121,15 +149,27 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
 
         calendar_id = os.environ["CALENDAR_ID_THEATER"]
 
+               waktu_mulai = ubah_tanggal(
+            event_data["date"],
+            event_data["time"]
+        )
+
+
+        waktu_selesai = ubah_tanggal(
+            event_data["date"],
+            event_data["time"]
+        )
+
+
         event = {
             "summary": event_data["title"],
             "description": event_data["member"],
             "start": {
-                "dateTime": "2026-06-25T19:00:00+07:00",
+                "dateTime": waktu_mulai,
                 "timeZone": "Asia/Jakarta"
             },
             "end": {
-                "dateTime": "2026-06-25T21:00:00+07:00",
+                "dateTime": waktu_selesai,
                 "timeZone": "Asia/Jakarta"
             }
         }
