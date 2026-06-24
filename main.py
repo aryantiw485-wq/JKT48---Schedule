@@ -76,10 +76,8 @@ for item in items:
 
 
     # Cek Gita
-    ada_gita = any(
-        nama.lower() in member_list.lower()
-        for nama in TARGET_MEMBER
-    )
+    ada_gita = any(nama.lower() in member_list.lower()
+        for nama in TARGET_MEMBER)
 
 
     # MODE LATIHAN
@@ -89,53 +87,41 @@ for item in items:
 
     # Ambil show
     show = re.search(
-        r"pertunjukan (.*?) \|",
-        text
-    )
+        r"pertunjukan (.*?) \|",text)
 
 
     # Ambil tanggal
     tanggal = re.search(
-        r"\| (\d{1,2} \w+ \d{4}) \|",
-        text
-    )
+        r"\| (\d{1,2} \w+ \d{4}) \|",text)
 
 
     # Ambil jam
-    jam = re.search(
-        r"\| (\d{2}\.\d{2}) WIB",
-        text
-    )
+    jam = re.search(r"\| (\d{2}\.\d{2}) WIB",text)
 
 
-    print(
-        "Show   :",
-        show.group(1) if show else "-"
-    )
+    print("Show   :",show.group(1) if show else "-")
 
-    print(
-        "Tanggal:",
-        tanggal.group(1) if tanggal else "-"
-    )
+    print("Tanggal:",tanggal.group(1) if tanggal else "-")
 
-    print(
-        "Jam    :",
-        jam.group(1) if jam else "-"
-    )
+    print("Jam    :",jam.group(1) if jam else "-")
 
-    print(
-        "Member :",
-        member_list
-    )
+    print("Member :",member_list)
 
 
-    print(
-        "Apakah Gita dicari? :",
-        ada_gita
-    )
+    print("Apakah Gita dicari? :",ada_gita)
 
 
     if ada_gita:
         print("⭐ GITA TAMPIL ⭐")
+
+        event_data = {
+            "title": f"⭐ JKT48 Theater - {show.group(1)}",
+            "date": tanggal.group(1),
+            "time": jam.group(1),
+            "member": member_list}
+
+        print("\n📅 DATA EVENT")
+        print(event_data)
+
     else:
         print("❌ Bukan Gita")
