@@ -1,125 +1,38 @@
-import requests
-import xml.etree.ElementTree as ET
-import re
+import os
 
+print("DEBUG START")
+print(os.environ.keys())
+print("DEBUG END")
 
-MODE_TEST = True
+import os
+import json
+from datetime import datetime, timedelta
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
 
+creds_json = json.loads(os.environ["GOOGLE_CREDENTIALS"])
 
-# Nama yang dicari
-TARGET_MEMBER = [
-    "Gita",
-    "Gita Sekar Andarini"
-]
-
-
-URL = "https://nitter.net/moshi2jkt48/rss"
-
-HEADERS = {
-    "User-Agent": "Mozilla/5.0"
-}
-
-
-print("🔄 Mengambil RSS Moshi...")
-
-
-response = requests.get(
-    URL,
-    headers=HEADERS,
-    timeout=30
+credentials = service_account.Credentials.from_service_account_info(
+    creds_json,
+    scopes=["https://www.googleapis.com/auth/calendar"]
 )
 
+service = build("calendar", "v3", credentials=credentials)
 
-print("Status RSS:", response.status_code)
+calendar_id = os.environ["CALENDAR_ID_THEATER"]
 
+event = {
+    "summary": "TEST EVENT JKT48 BOT",
+    "start": {
+        "dateTime": (datetime.utcnow() + timedelta(minutes=1)).isoformat() + "Z",
+        "timeZone": "Asia/Jakarta",
+    },
+    "end": {
+        "dateTime": (datetime.utcnow() + timedelta(minutes=61)).isoformat() + "Z",
+        "timeZone": "Asia/Jakarta",
+    },
+}
 
-root = ET.fromstring(response.text)
+service.events().insert(calendarId=calendar_id, body=event).execute()
 
-items = root.findall(".//item")
-
-
-print("Jumlah item RSS:", len(items))
-
-
-for item in items:
-
-    title = item.find("title")
-
-    if title is None:
-        continue
-
-    text = title.text or ""
-
-    print("RSS:", text)
-
-    # Cari tweet daftar member
-    if "Berikut adalah member yang akan tampil" not in text:
-        continue
-
-    print("\n==========================")
-    print("📌 Jadwal ditemukan")
-    print("==========================")
-
-    # Ambil daftar member
-    member_match = re.search(
-        r"WIB\s+(.*)",
-        text
-    )
-
-
-    if member_match:
-        member_list = member_match.group(1)
-    else:
-        member_list = ""
-
-
-    # Cek Gita
-    ada_gita = any(nama.lower() in member_list.lower()
-        for nama in TARGET_MEMBER)
-
-
-    # MODE LATIHAN
-    if MODE_TEST:
-        ada_gita = True
-
-
-    # Ambil show
-    show = re.search(
-        r"pertunjukan (.*?) \|",text)
-
-
-    # Ambil tanggal
-    tanggal = re.search(
-        r"\| (\d{1,2} \w+ \d{4}) \|",text)
-
-
-    # Ambil jam
-    jam = re.search(r"\| (\d{2}\.\d{2}) WIB",text)
-
-
-    print("Show   :",show.group(1) if show else "-")
-
-    print("Tanggal:",tanggal.group(1) if tanggal else "-")
-
-    print("Jam    :",jam.group(1) if jam else "-")
-
-    print("Member :",member_list)
-
-
-    print("Apakah Gita dicari? :",ada_gita)
-
-
-    if ada_gita:
-        print("⭐ GITA TAMPIL ⭐")
-
-        event_data = {
-            "title": f"⭐ JKT48 Theater - {show.group(1)}",
-            "date": tanggal.group(1),
-            "time": jam.group(1),
-            "member": member_list}
-
-        print("\n📅 DATA EVENT")
-        print(event_data)
-
-    else:
-        print("❌ Bukan Gita")
+print("TEST EVENT BERHASIL DIBUAT 🫡")
