@@ -149,7 +149,7 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
 
         calendar_id = os.environ["CALENDAR_ID_THEATER"]
 
-               waktu_mulai = ubah_tanggal(
+        waktu_mulai = ubah_tanggal(
             event_data["date"],
             event_data["time"]
         )
