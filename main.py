@@ -100,10 +100,7 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
             "member": member_list
         }
 
-        print("\n📅 DATA EVENT")
-        print(event_data)
+       print("\n📅 DATA EVENT")
+print(event_data)
 
-    else:
-        print("❌ Bukan Gita")
-
-    break
+print("\n🚀 Mencoba membuat event kalender...")
