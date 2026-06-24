@@ -89,7 +89,7 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
         ada_gita
     )
 
-   if ada_gita:
+if ada_gita:
     print("⭐ GITA TAMPIL ⭐")
 
     event_data = {
