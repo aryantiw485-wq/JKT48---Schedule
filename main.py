@@ -75,30 +75,11 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
         text
     )
 
-    print(
-        "Show   :",
-        show.group(1) if show else "-"
-    )
-
-    print(
-        "Tanggal:",
-        tanggal.group(1) if tanggal else "-"
-    )
-
-    print(
-        "Jam    :",
-        jam.group(1) if jam else "-"
-    )
-
-    print(
-        "Member :",
-        member_list
-    )
-
-    print(
-        "Apakah Gita dicari? :",
-        ada_gita
-    )
+    print("Show   :", show.group(1) if show else "-")
+    print("Tanggal:", tanggal.group(1) if tanggal else "-")
+    print("Jam    :", jam.group(1) if jam else "-")
+    print("Member :", member_list)
+    print("Apakah Gita dicari? :", ada_gita)
 
     if ada_gita:
 
@@ -134,6 +115,29 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
         )
 
         print("✅ Berhasil terhubung ke Google Calendar")
+
+        calendar_id = os.environ["CALENDAR_ID_THEATER"]
+
+        event = {
+            "summary": event_data["title"],
+            "description": event_data["member"],
+            "start": {
+                "dateTime": "2026-06-25T19:00:00+07:00",
+                "timeZone": "Asia/Jakarta"
+            },
+            "end": {
+                "dateTime": "2026-06-25T21:00:00+07:00",
+                "timeZone": "Asia/Jakarta"
+            }
+        }
+
+        created_event = service.events().insert(
+            calendarId=calendar_id,
+            body=event
+        ).execute()
+
+        print("🎉 EVENT BERHASIL DIBUAT")
+        print(created_event["htmlLink"])
 
     else:
         print("❌ Bukan Gita")
