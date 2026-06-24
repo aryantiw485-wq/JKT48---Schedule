@@ -134,7 +134,8 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
             }
         }
 
-               existing_events = service.events().list(
+
+        existing_events = service.events().list(
             calendarId=calendar_id,
             q=event_data["title"]
         ).execute()
