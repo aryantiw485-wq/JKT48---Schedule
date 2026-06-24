@@ -19,22 +19,27 @@ items = root.findall(".//item")
 
 print("Jumlah item RSS:", len(items))
 
+# ==========================
+# MODE TEST
+# ==========================
 MODE_TEST = True
 
 for item in items:
-
-    title = item.find("title")
-
-    if title is None:
-        continue
 
     if MODE_TEST:
         text = """
 Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat Tanganku | 25 Juni 2026 | 19.00 WIB Gita Sekar Andarini, Christy, Lulu
 """
-        MODE_TEST = False
     else:
-        continue
+        title = item.find("title")
+
+        if title is None:
+            continue
+
+        text = title.text or ""
+
+        if "Berikut adalah member yang akan tampil" not in text:
+            continue
 
     print("\n==========================")
     print("📌 Jadwal ditemukan")
@@ -45,10 +50,11 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
         text
     )
 
-    if member_match:
-        member_list = member_match.group(1)
-    else:
-        member_list = ""
+    member_list = (
+        member_match.group(1)
+        if member_match
+        else ""
+    )
 
     ada_gita = "gita" in member_list.lower()
 
@@ -91,41 +97,23 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
         "Apakah Gita dicari? :",
         ada_gita
     )
-if ada_gita:
-    print("⭐ GITA TAMPIL ⭐")
 
-    event_data = {
-        "title": f"⭐ JKT48 Theater - {show.group(1)}",
-        "date": tanggal.group(1),
-        "time": jam.group(1),
-        "member": member_list
-    }
+    if ada_gita:
 
-    print("\n📅 DATA EVENT")
-    print(event_data)
-    
-import os
-import json
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
+        print("⭐ GITA TAMPIL ⭐")
 
-print("\n🚀 Menghubungkan ke Google Calendar...")
+        event_data = {
+            "title": f"⭐ JKT48 Theater - {show.group(1)}",
+            "date": tanggal.group(1),
+            "time": jam.group(1),
+            "member": member_list
+        }
 
-creds_json = json.loads(os.environ["GOOGLE_CREDENTIALS"])
+        print("\n📅 DATA EVENT")
+        print(event_data)
 
-credentials = service_account.Credentials.from_service_account_info(
-    creds_json,
-    scopes=["https://www.googleapis.com/auth/calendar"]
-)
+    else:
+        print("❌ Bukan Gita")
 
-service = build(
-    "calendar",
-    "v3",
-    credentials=credentials
-)
-
-print("✅ Berhasil terhubung")
-    print("\n🚀 Mencoba membuat event kalender...")
-
-else:
-    print("❌ Bukan Gita")
+    if MODE_TEST:
+        break
