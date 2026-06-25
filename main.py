@@ -193,7 +193,8 @@ for item in items:
        judul = (
            f"JKT48 Theater - {nama_show}"
        )
-        print("📅 Tanpa Gita")
+        
+       print("📅 Tanpa Gita")
 
     waktu_mulai = ubah_tanggal(
         tanggal.group(1),
@@ -236,6 +237,7 @@ for item in items:
 
     existing_events = service.events().list(
         calendarId=calendar_id
+        maxResults=2500
     ).execute()
 
     event_ditemukan = False
