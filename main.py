@@ -168,24 +168,31 @@ for item in items:
         in member_list.lower()
     )
 
-    if ada_gita:
+    warna = "8"
 
-        judul = (
-            f"⭐ GITA TAMPIL - {nama_show}"
-        )
-
+    if "Sambil Menggandeng Erat Tanganku" in nama_show:
         warna = "10"
 
-        print("⭐ GITA TAMPIL")
+    elif "Pertaruhan Cinta" in nama_show:
+        warna = "11"
+
+    elif "Aturan Anti Cinta" in nama_show:
+        warna = "9"
+
+    elif "Cara Meminum Ramune" in nama_show:
+        warna = "5"
+        
+    if ada_gita:
+
+       judul = (
+           f"⭐ GITA TAMPIL - {nama_show}"
+       )
 
     else:
 
-        judul = (
-            f"JKT48 Theater - {nama_show}"
-        )
-
-        warna = "8"
-
+       judul = (
+           f"JKT48 Theater - {nama_show}"
+       )
         print("📅 Tanpa Gita")
 
     waktu_mulai = ubah_tanggal(
@@ -205,14 +212,27 @@ for item in items:
         ),
         "colorId": warna,
         "start": {
-            "dateTime": waktu_mulai,
-            "timeZone": "Asia/Jakarta"
+             "dateTime": waktu_mulai,
+             "timeZone": "Asia/Jakarta"
         },
         "end": {
             "dateTime": waktu_selesai,
             "timeZone": "Asia/Jakarta"
-        }
-    }
+        },
+        "reminders": {
+             "useDefault": False,
+             "overrides": [
+                 {
+                     "method": "popup",
+                     "minutes": 1440
+                 },
+                 {
+                    "method": "popup",
+                    "minutes": 60
+                 }
+             ]
+         }
+      }
 
     existing_events = service.events().list(
         calendarId=calendar_id
