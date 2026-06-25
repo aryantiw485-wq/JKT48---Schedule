@@ -66,6 +66,18 @@ r = requests.get(
     headers={"User-Agent": "Mozilla/5.0"}
 )
 
+html = r.text
+
+print("Status:", r.status_code)
+print("Status JKT48:", r.status_code)
+print("Panjang HTML:", len(html))
+
+if "Anggota yang tampil" in html:
+    print("✅ ADA MEMBER")
+else:
+    print("❌ TIDAK ADA MEMBER")
+print("Panjang HTML:", len(html))
+
 print("===== HTML JKT48 =====")
 print(r.text[:20000])
 print("===== END HTML =====")
