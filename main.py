@@ -82,9 +82,13 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
 
         text = title.text or ""
 
-        print("RSS:", text)
+        print("CEK:", text)
         
-        if "Berikut adalah member yang akan tampil" not in text:
+        if (
+            "Berikut adalah member yang akan tampil" not in text
+            and
+            "member yang akan tampil" not in text.lower()
+        ):
             continue
 
     print("\n==========================")
