@@ -2,7 +2,7 @@ name: JKT48 Calendar Sync
 
 on:
   schedule:
-    - cron: "0 */3 * * *"  # tiap 3 jam
+    - cron: "0 */30 * * *"  # tiap 30 menit
   workflow_dispatch:
 
 jobs:
