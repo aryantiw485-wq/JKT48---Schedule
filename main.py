@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 import re
 import os
 import json
+from datetime import datetime, timedelta
 
 bulan = {
     "Januari": "01",
@@ -31,6 +32,16 @@ def ubah_tanggal(tanggal, jam):
         f"{tahun}-{bulan_angka}-{hari}T"
         f"{jam_baru}:00+07:00"
     )
+    
+def tambah_2_jam(waktu_iso):
+
+    mulai = datetime.fromisoformat(
+        waktu_iso.replace("Z", "+00:00")
+    )
+
+    selesai = mulai + timedelta(hours=2)
+
+    return selesai.isoformat()
 
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
@@ -164,9 +175,8 @@ Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat 
     )
 
 
-    waktu_selesai = ubah_tanggal(
-        event_data["date"],
-        event_data["time"]
+    waktu_selesai = tambah_2_jam(
+         waktu_mulai
     )
 
 
