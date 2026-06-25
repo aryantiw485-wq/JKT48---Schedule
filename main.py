@@ -5,262 +5,288 @@ import os
 import json
 from datetime import datetime, timedelta
 
-bulan = {
-    "Januari": "01",
-    "Februari": "02",
-    "Maret": "03",
-    "April": "04",
-    "Mei": "05",
-    "Juni": "06",
-    "Juli": "07",
-    "Agustus": "08",
-    "September": "09",
-    "Oktober": "10",
-    "November": "11",
-    "Desember": "12"
-}
-
-def ubah_tanggal(tanggal, jam):
-
-    hari, nama_bulan, tahun = tanggal.split()
-
-    bulan_angka = bulan[nama_bulan]
-
-    jam_baru = jam.replace(".", ":")
-
-    return (
-        f"{tahun}-{bulan_angka}-{hari}T"
-        f"{jam_baru}:00+07:00"
-    )
-    
-def tambah_2_jam(waktu_iso):
-
-    mulai = datetime.fromisoformat(
-        waktu_iso.replace("Z", "+00:00")
-    )
-
-    selesai = mulai + timedelta(hours=2)
-
-    return selesai.isoformat()
-
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
+# =========================
+
+# KONVERSI BULAN
+
+# =========================
+
+bulan = {
+"Januari": "01",
+"Februari": "02",
+"Maret": "03",
+"April": "04",
+"Mei": "05",
+"Juni": "06",
+"Juli": "07",
+"Agustus": "08",
+"September": "09",
+"Oktober": "10",
+"November": "11",
+"Desember": "12"
+}
+
+# =========================
+
+# FORMAT TANGGAL
+
+# =========================
+
+def ubah_tanggal(tanggal, jam):
+
+```
+hari, nama_bulan, tahun = tanggal.split()
+
+return (
+    f"{tahun}-{bulan[nama_bulan]}-{hari.zfill(2)}T"
+    f"{jam.replace('.', ':')}:00+07:00"
+)
+```
+
+# =========================
+
+# TAMBAH 2 JAM
+
+# =========================
+
+def tambah_2_jam(waktu_iso):
+
+```
+mulai = datetime.fromisoformat(
+    waktu_iso
+)
+
+selesai = mulai + timedelta(hours=2)
+
+return selesai.isoformat()
+```
+
+# =========================
+
+# GOOGLE CALENDAR
+
+# =========================
+
+creds_json = json.loads(
+os.environ["GOOGLE_CREDENTIALS"]
+)
+
+credentials = service_account.Credentials.from_service_account_info(
+creds_json,
+scopes=[
+"https://www.googleapis.com/auth/calendar"
+]
+)
+
+service = build(
+"calendar",
+"v3",
+credentials=credentials
+)
+
+calendar_id = os.environ["CALENDAR_ID_THEATER"]
+
+# =========================
+
+# RSS MOSHI
+
+# =========================
+
 print("🔄 Mengambil RSS Moshi...")
 
-URL = "https://nitter.net/moshi2jkt48/rss"
+rss_url = "https://nitter.net/moshi2jkt48/rss"
 
 response = requests.get(
-    URL,
-    headers={"User-Agent": "Mozilla/5.0"},
-    timeout=30
+rss_url,
+headers={
+"User-Agent": "Mozilla/5.0"
+},
+timeout=30
 )
-print(response.text[:5000])
-
-import requests
-
-url = "https://jkt48.com/purchase/schedule/show?code=SHF963"
-
-r = requests.get(
-    url,
-    headers={"User-Agent": "Mozilla/5.0"}
-)
-
-html = r.text
-
-print("Status:", r.status_code)
-print("Status JKT48:", r.status_code)
-print("Panjang HTML:", len(html))
-
-if "Anggota yang tampil" in html:
-    print("✅ ADA MEMBER")
-else:
-    print("❌ TIDAK ADA MEMBER")
-print("Panjang HTML:", len(html))
-
-print("===== HTML JKT48 =====")
-print(r.text[:20000])
-print("===== END HTML =====")
 
 print("Status RSS:", response.status_code)
 
 root = ET.fromstring(response.text)
+
 items = root.findall(".//item")
 
 print("Jumlah item RSS:", len(items))
 
-MODE_TEST = False
+# =========================
+
+# PROSES TWEET
+
+# =========================
 
 for item in items:
 
-    if MODE_TEST:
+```
+title = item.find("title")
 
-        text = """
-Berikut adalah member yang akan tampil pada pertunjukan Sambil Menggandeng Erat Tanganku | 25 Juni 2026 | 19.00 WIB Gita Sekar Andarini, Christy, Lulu
-"""
+if title is None:
+    continue
 
-    else:
+text = title.text or ""
 
-        title = item.find("title")
+if (
+    "Berikut adalah member yang akan tampil"
+    not in text
+):
+    continue
 
-        if title is None:
-            continue
+print("\n📌 Jadwal ditemukan")
+print(text)
 
-        text = title.text or ""
+show = re.search(
+    r"pertunjukan (.*?) \|",
+    text
+)
 
-        print("CEK:", text)
-        
-        if (
-            "Berikut adalah member yang akan tampil" not in text
-            and
-            "member yang akan tampil" not in text.lower()
-        ):
-            continue
+tanggal = re.search(
+    r"\| (\d{1,2} \w+ \d{4}) \|",
+    text
+)
 
-    print("\n==========================")
-    print("📌 Jadwal ditemukan")
-    print("==========================")
+jam = re.search(
+    r"\| (\d{2}\.\d{2}) WIB",
+    text
+)
 
-    member_match = re.search(
-        r"WIB\s+(.*)",
-        text
+member_match = re.search(
+    r"WIB\s+(.*)",
+    text
+)
+
+if not (
+    show and
+    tanggal and
+    jam
+):
+    print("⚠️ Format tidak cocok")
+    continue
+
+member_list = (
+    member_match.group(1)
+    if member_match
+    else ""
+)
+
+ada_gita = (
+    "gita"
+    in member_list.lower()
+)
+
+if ada_gita:
+
+    judul = (
+        f"⭐ GITA TAMPIL - "
+        f"{show.group(1)}"
     )
 
-    member_list = (
-        member_match.group(1)
-        if member_match
-        else ""
+    warna = "10"
+
+else:
+
+    judul = (
+        f"JKT48 Theater - "
+        f"{show.group(1)}"
     )
 
-    ada_gita = "gita" in member_list.lower()
+    warna = "8"
 
-    show = re.search(
-        r"pertunjukan (.*?) \|",
-        text
-    )
+waktu_mulai = ubah_tanggal(
+    tanggal.group(1),
+    jam.group(1)
+)
 
-    tanggal = re.search(
-        r"\| (\d{1,2} \w+ \d{4}) \|",
-        text
-    )
+waktu_selesai = tambah_2_jam(
+    waktu_mulai
+)
 
-    jam = re.search(
-        r"\| (\d{2}\.\d{2}) WIB",
-        text
-    )
-
-    print("Show   :", show.group(1) if show else "-")
-    print("Tanggal:", tanggal.group(1) if tanggal else "-")
-    print("Jam    :", jam.group(1) if jam else "-")
-    print("Member :", member_list)
-    print("Apakah Gita dicari? :", ada_gita)
-
-    if ada_gita:
-
-        print("⭐ GITA TAMPIL ⭐")
-
-        judul = f"⭐ GITA TAMPIL - {show.group(1)}"
-
-    else:
-
-        print("📅 Theater tanpa Gita")
-
-        judul = f"JKT48 Theater - {show.group(1)}"
-
-
-    event_data = {
-        "title": judul,
-        "date": tanggal.group(1),
-        "time": jam.group(1),
-        "member": member_list
+event = {
+    "summary": judul,
+    "description":
+        f"Member:\n{member_list}",
+    "colorId": warna,
+    "start": {
+        "dateTime": waktu_mulai,
+        "timeZone": "Asia/Jakarta"
+    },
+    "end": {
+        "dateTime": waktu_selesai,
+        "timeZone": "Asia/Jakarta"
     }
+}
 
-    print("\n📅 DATA EVENT")
-    print(event_data)
+existing_events = service.events().list(
+    calendarId=calendar_id
+).execute()
 
-    print("\n🚀 Menghubungkan ke Google Calendar...")
+event_ditemukan = False
 
-    creds_json = json.loads(
-            os.environ["GOOGLE_CREDENTIALS"]
+for old_event in existing_events.get(
+    "items",
+    []
+):
+
+    old_start = (
+        old_event.get(
+            "start",
+            {}
+        ).get(
+            "dateTime"
         )
-
-    credentials = service_account.Credentials.from_service_account_info(
-            creds_json,
-            scopes=[
-                "https://www.googleapis.com/auth/calendar"
-            ]
-        )
-
-    service = build(
-            "calendar",
-            "v3",
-            credentials=credentials
-        )
-
-    print("✅ Berhasil terhubung ke Google Calendar")
-
-    calendar_id = os.environ["CALENDAR_ID_THEATER"]
-
-    waktu_mulai = ubah_tanggal(
-        event_data["date"],
-        event_data["time"]
     )
 
-
-    waktu_selesai = tambah_2_jam(
-         waktu_mulai
+    old_summary = (
+        old_event.get(
+            "summary",
+            ""
+        )
     )
 
+    if (
+        old_start == waktu_mulai
+        and
+        show.group(1).lower()
+        in old_summary.lower()
+    ):
 
-    event = {
-        "summary": event_data["title"],
-        "description": event_data["member"],
-        "start": {
-                "dateTime": waktu_mulai,
-                "timeZone": "Asia/Jakarta"
-        },
-        "end": {
-                "dateTime": waktu_selesai,
-                "timeZone": "Asia/Jakarta"
-        }
-    }
-
-
-    existing_events = service.events().list(
-        calendarId=calendar_id,
-        q=event_data["title"]
-    ).execute()
-
-
-    event_sudah_ada = False
-
-
-    for old_event in existing_events.get("items", []):
-
-        old_start = old_event.get("start", {}).get("dateTime")
-
-
-        if old_start == event["start"]["dateTime"]:
-
-            event_sudah_ada = True
-            break
-
-
-
-    if event_sudah_ada:
-
-        print("⚠️ Event sudah ada, dilewati")
-
-
-    else:
-
-        created_event = service.events().insert(
+        service.events().update(
             calendarId=calendar_id,
+            eventId=old_event["id"],
             body=event
         ).execute()
 
-        print("🎉 EVENT BERHASIL DIBUAT")
-        print(created_event["htmlLink"])
+        print(
+            "🔄 Event diperbarui:"
+        )
 
-    if MODE_TEST:
+        print(judul)
+
+        event_ditemukan = True
+
         break
+
+if not event_ditemukan:
+
+    created = (
+        service.events()
+        .insert(
+            calendarId=calendar_id,
+            body=event
+        )
+        .execute()
+    )
+
+    print(
+        "🎉 Event baru dibuat"
+    )
+
+    print(
+        created["htmlLink"]
+    )
+```
