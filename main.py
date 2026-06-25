@@ -236,7 +236,7 @@ for item in items:
       }
 
     existing_events = service.events().list(
-        calendarId=calendar_id
+        calendarId=calendar_id,
         maxResults=2500
     ).execute()
 
