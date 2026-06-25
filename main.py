@@ -55,6 +55,18 @@ response = requests.get(
     headers={"User-Agent": "Mozilla/5.0"},
     timeout=30
 )
+print(response.text[:5000])
+
+import requests
+
+url = "https://jkt48.com/purchase/schedule/show?code=SHF963"
+
+r = requests.get(
+    url,
+    headers={"User-Agent": "Mozilla/5.0"}
+)
+
+print(r.text[:5000])
 
 print("Status RSS:", response.status_code)
 
