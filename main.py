@@ -8,30 +8,29 @@ from datetime import datetime, timedelta
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
-# =========================
-
-# KONVERSI BULAN
-
-# =========================
+# =====================================
+# BULAN INDONESIA
+# =====================================
 
 bulan = {
-"Januari": "01",
-"Februari": "02",
-"Maret": "03",
-"April": "04",
-"Mei": "05",
-"Juni": "06",
-"Juli": "07",
-"Agustus": "08",
-"September": "09",
-"Oktober": "10",
-"November": "11",
-"Desember": "12"
+    "Januari": "01",
+    "Februari": "02",
+    "Maret": "03",
+    "April": "04",
+    "Mei": "05",
+    "Juni": "06",
+    "Juli": "07",
+    "Agustus": "08",
+    "September": "09",
+    "Oktober": "10",
+    "November": "11",
+    "Desember": "12"
 }
 
-# =========================
-# FORMAT TANGGAL
-# =========================
+
+# =====================================
+# KONVERSI TANGGAL
+# =====================================
 
 def ubah_tanggal(tanggal, jam):
 
@@ -43,61 +42,61 @@ def ubah_tanggal(tanggal, jam):
     )
 
 
-# =========================
-# TAMBAH 2 JAM
-# =========================
+# =====================================
+# TAMBAH DURASI 2 JAM
+# =====================================
 
 def tambah_2_jam(waktu_iso):
 
-    mulai = datetime.fromisoformat(
-        waktu_iso
-    )
+    mulai = datetime.fromisoformat(waktu_iso)
 
     selesai = mulai + timedelta(hours=2)
 
     return selesai.isoformat()
 
-# =========================
 
+# =====================================
 # GOOGLE CALENDAR
+# =====================================
 
-# =========================
+print("🔗 Menghubungkan Google Calendar...")
 
 creds_json = json.loads(
-os.environ["GOOGLE_CREDENTIALS"]
+    os.environ["GOOGLE_CREDENTIALS"]
 )
 
 credentials = service_account.Credentials.from_service_account_info(
-creds_json,
-scopes=[
-"https://www.googleapis.com/auth/calendar"
-]
+    creds_json,
+    scopes=[
+        "https://www.googleapis.com/auth/calendar"
+    ]
 )
 
 service = build(
-"calendar",
-"v3",
-credentials=credentials
+    "calendar",
+    "v3",
+    credentials=credentials
 )
 
 calendar_id = os.environ["CALENDAR_ID_THEATER"]
 
-# =========================
+print("✅ Google Calendar siap")
 
+
+# =====================================
 # RSS MOSHI
-
-# =========================
+# =====================================
 
 print("🔄 Mengambil RSS Moshi...")
 
 rss_url = "https://nitter.net/moshi2jkt48/rss"
 
 response = requests.get(
-rss_url,
-headers={
-"User-Agent": "Mozilla/5.0"
-},
-timeout=30
+    rss_url,
+    headers={
+        "User-Agent": "Mozilla/5.0"
+    },
+    timeout=30
 )
 
 print("Status RSS:", response.status_code)
@@ -108,178 +107,167 @@ items = root.findall(".//item")
 
 print("Jumlah item RSS:", len(items))
 
-# =========================
 
-# PROSES TWEET
-
-# =========================
+# =====================================
+# PROSES RSS
+# =====================================
 
 for item in items:
 
-```
-title = item.find("title")
+    title = item.find("title")
 
-if title is None:
-    continue
+    if title is None:
+        continue
 
-text = title.text or ""
+    text = title.text or ""
 
-if (
-    "Berikut adalah member yang akan tampil"
-    not in text
-):
-    continue
+    if "Berikut adalah member yang akan tampil" not in text:
+        continue
 
-print("\n📌 Jadwal ditemukan")
-print(text)
+    print("\n======================")
+    print("📌 JADWAL DITEMUKAN")
+    print("======================")
 
-show = re.search(
-    r"pertunjukan (.*?) \|",
-    text
-)
+    print(text)
 
-tanggal = re.search(
-    r"\| (\d{1,2} \w+ \d{4}) \|",
-    text
-)
-
-jam = re.search(
-    r"\| (\d{2}\.\d{2}) WIB",
-    text
-)
-
-member_match = re.search(
-    r"WIB\s+(.*)",
-    text
-)
-
-if not (
-    show and
-    tanggal and
-    jam
-):
-    print("⚠️ Format tidak cocok")
-    continue
-
-member_list = (
-    member_match.group(1)
-    if member_match
-    else ""
-)
-
-ada_gita = (
-    "gita"
-    in member_list.lower()
-)
-
-if ada_gita:
-
-    judul = (
-        f"⭐ GITA TAMPIL - "
-        f"{show.group(1)}"
+    show = re.search(
+        r"pertunjukan (.*?) \|",
+        text
     )
 
-    warna = "10"
-
-else:
-
-    judul = (
-        f"JKT48 Theater - "
-        f"{show.group(1)}"
+    tanggal = re.search(
+        r"\| (\d{1,2} \w+ \d{4}) \|",
+        text
     )
 
-    warna = "8"
+    jam = re.search(
+        r"\| (\d{2}\.\d{2}) WIB",
+        text
+    )
 
-waktu_mulai = ubah_tanggal(
-    tanggal.group(1),
-    jam.group(1)
-)
+    member_match = re.search(
+        r"WIB\s+(.*)",
+        text
+    )
 
-waktu_selesai = tambah_2_jam(
-    waktu_mulai
-)
+    if not (show and tanggal and jam):
 
-event = {
-    "summary": judul,
-    "description":
-        f"Member:\n{member_list}",
-    "colorId": warna,
-    "start": {
-        "dateTime": waktu_mulai,
-        "timeZone": "Asia/Jakarta"
-    },
-    "end": {
-        "dateTime": waktu_selesai,
-        "timeZone": "Asia/Jakarta"
+        print("⚠️ Format tweet tidak cocok")
+        continue
+
+    member_list = (
+        member_match.group(1)
+        if member_match
+        else ""
+    )
+
+    nama_show = show.group(1)
+
+    ada_gita = (
+        "gita"
+        in member_list.lower()
+    )
+
+    if ada_gita:
+
+        judul = (
+            f"⭐ GITA TAMPIL - {nama_show}"
+        )
+
+        warna = "10"
+
+        print("⭐ GITA TAMPIL")
+
+    else:
+
+        judul = (
+            f"JKT48 Theater - {nama_show}"
+        )
+
+        warna = "8"
+
+        print("📅 Tanpa Gita")
+
+    waktu_mulai = ubah_tanggal(
+        tanggal.group(1),
+        jam.group(1)
+    )
+
+    waktu_selesai = tambah_2_jam(
+        waktu_mulai
+    )
+
+    event = {
+        "summary": judul,
+        "description": (
+            f"Show : {nama_show}\n\n"
+            f"Member:\n{member_list}"
+        ),
+        "colorId": warna,
+        "start": {
+            "dateTime": waktu_mulai,
+            "timeZone": "Asia/Jakarta"
+        },
+        "end": {
+            "dateTime": waktu_selesai,
+            "timeZone": "Asia/Jakarta"
+        }
     }
-}
 
-existing_events = service.events().list(
-    calendarId=calendar_id
-).execute()
+    existing_events = service.events().list(
+        calendarId=calendar_id
+    ).execute()
 
-event_ditemukan = False
+    event_ditemukan = False
 
-for old_event in existing_events.get(
-    "items",
-    []
-):
-
-    old_start = (
-        old_event.get(
-            "start",
-            {}
-        ).get(
-            "dateTime"
-        )
-    )
-
-    old_summary = (
-        old_event.get(
-            "summary",
-            ""
-        )
-    )
-
-    if (
-        old_start == waktu_mulai
-        and
-        show.group(1).lower()
-        in old_summary.lower()
+    for old_event in existing_events.get(
+        "items",
+        []
     ):
 
-        service.events().update(
+        old_start = (
+            old_event.get(
+                "start",
+                {}
+            ).get(
+                "dateTime"
+            )
+        )
+
+        old_summary = (
+            old_event.get(
+                "summary",
+                ""
+            )
+        )
+
+        if (
+            old_start == waktu_mulai
+            and
+            nama_show.lower()
+            in old_summary.lower()
+        ):
+
+            service.events().update(
+                calendarId=calendar_id,
+                eventId=old_event["id"],
+                body=event
+            ).execute()
+
+            print("🔄 Event diperbarui")
+            print(judul)
+
+            event_ditemukan = True
+            break
+
+    if not event_ditemukan:
+
+        created = service.events().insert(
             calendarId=calendar_id,
-            eventId=old_event["id"],
             body=event
         ).execute()
 
-        print(
-            "🔄 Event diperbarui:"
-        )
+        print("🎉 Event baru dibuat")
+        print(created["htmlLink"])
 
-        print(judul)
-
-        event_ditemukan = True
-
-        break
-
-if not event_ditemukan:
-
-    created = (
-        service.events()
-        .insert(
-            calendarId=calendar_id,
-            body=event
-        )
-        .execute()
-    )
-
-    print(
-        "🎉 Event baru dibuat"
-    )
-
-    print(
-        created["htmlLink"]
-    )
-```
+print("\n✅ Sinkronisasi selesai")
