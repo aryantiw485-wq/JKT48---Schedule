@@ -66,7 +66,9 @@ r = requests.get(
     headers={"User-Agent": "Mozilla/5.0"}
 )
 
-print(r.text[:5000])
+print("===== HTML JKT48 =====")
+print(r.text[:20000])
+print("===== END HTML =====")
 
 print("Status RSS:", response.status_code)
 
