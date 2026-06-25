@@ -30,39 +30,32 @@ bulan = {
 }
 
 # =========================
-
 # FORMAT TANGGAL
-
 # =========================
 
 def ubah_tanggal(tanggal, jam):
 
-```
-hari, nama_bulan, tahun = tanggal.split()
+    hari, nama_bulan, tahun = tanggal.split()
 
-return (
-    f"{tahun}-{bulan[nama_bulan]}-{hari.zfill(2)}T"
-    f"{jam.replace('.', ':')}:00+07:00"
-)
-```
+    return (
+        f"{tahun}-{bulan[nama_bulan]}-{hari.zfill(2)}T"
+        f"{jam.replace('.', ':')}:00+07:00"
+    )
+
 
 # =========================
-
 # TAMBAH 2 JAM
-
 # =========================
 
 def tambah_2_jam(waktu_iso):
 
-```
-mulai = datetime.fromisoformat(
-    waktu_iso
-)
+    mulai = datetime.fromisoformat(
+        waktu_iso
+    )
 
-selesai = mulai + timedelta(hours=2)
+    selesai = mulai + timedelta(hours=2)
 
-return selesai.isoformat()
-```
+    return selesai.isoformat()
 
 # =========================
 
