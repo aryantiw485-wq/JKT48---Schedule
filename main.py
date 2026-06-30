@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 import re
 import os
 import json
+import requests
 from datetime import datetime, timedelta
 
 from google.oauth2 import service_account
@@ -18,12 +19,9 @@ TELEGRAM_CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 
 def kirim_telegram(pesan):
 
-    url = (
-        f"https://api.telegram.org/bot"
-        f"{TELEGRAM_TOKEN}/sendMessage"
-    )
+    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
 
-    requests.post(
+    response = requests.post(
         url,
         json={
             "chat_id": TELEGRAM_CHAT_ID,
@@ -31,6 +29,14 @@ def kirim_telegram(pesan):
         },
         timeout=30
     )
+
+    print("Status Telegram:", response.status_code)
+    print(response.text)
+
+
+# ===== TES TELEGRAM =====
+kirim_telegram("🎉 Tes notifikasi dari GitHub Actions berhasil!")
+
 
 # =====================================
 # BULAN INDONESIA
@@ -105,6 +111,7 @@ service = build(
 calendar_id = os.environ["CALENDAR_ID_THEATER"]
 
 print("✅ Google Calendar siap")
+
 
 
 # =====================================
@@ -206,19 +213,6 @@ for item in items:
     elif "Cara Meminum Ramune" in nama_show:
         warna = "5"
         
-    if ada_gita:
-
-       judul = (
-           f"⭐ GITA TAMPIL - {nama_show}"
-       )
-
-    else:
-
-       judul = (
-           f"JKT48 Theater - {nama_show}"
-       )
-        
-       print("📅 Tanpa Gita")
 
     waktu_mulai = ubah_tanggal(
         tanggal.group(1),
@@ -306,15 +300,15 @@ for item in items:
             event_ditemukan = True
             break
 
-    if not event_ditemukan:
+if not event_ditemukan:
 
-created = service.events().insert(
-    calendarId=calendar_id,
-    body=event
-).execute()
+   created = service.events().insert(
+       calendarId=calendar_id,
+       body=event
+   ).execute()
 
-print("🎉 Event baru dibuat")
-print(created["htmlLink"])
+   print("🎉 Event baru dibuat")
+   print(created["htmlLink"])
 
 if ada_gita:
 
