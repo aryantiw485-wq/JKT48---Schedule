@@ -9,6 +9,30 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
 # =====================================
+# TELEGRAM
+# =====================================
+
+TELEGRAM_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
+TELEGRAM_CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
+
+
+def kirim_telegram(pesan):
+
+    url = (
+        f"https://api.telegram.org/bot"
+        f"{TELEGRAM_TOKEN}/sendMessage"
+    )
+
+    requests.post(
+        url,
+        json={
+            "chat_id": TELEGRAM_CHAT_ID,
+            "text": pesan
+        },
+        timeout=30
+    )
+
+# =====================================
 # BULAN INDONESIA
 # =====================================
 
@@ -284,12 +308,32 @@ for item in items:
 
     if not event_ditemukan:
 
-        created = service.events().insert(
-            calendarId=calendar_id,
-            body=event
-        ).execute()
+created = service.events().insert(
+    calendarId=calendar_id,
+    body=event
+).execute()
 
-        print("🎉 Event baru dibuat")
-        print(created["htmlLink"])
+print("🎉 Event baru dibuat")
+print(created["htmlLink"])
 
+if ada_gita:
+
+    pesan = (
+        "🌸 GITA ALERT 🌸\n\n"
+        f"🎭 {nama_show}\n"
+        f"📅 {tanggal.group(1)}\n"
+        f"🕒 {jam.group(1)} WIB\n\n"
+        "✅ Sudah masuk Google Calendar"
+    )
+
+else:
+
+    pesan = (
+        "📅 Jadwal Theater Baru\n\n"
+        f"🎭 {nama_show}\n"
+        f"📅 {tanggal.group(1)}\n"
+        f"🕒 {jam.group(1)} WIB"
+    )
+
+kirim_telegram(pesan)
 print("\n✅ Sinkronisasi selesai")
