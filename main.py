@@ -199,10 +199,10 @@ for item in items:
     # JUDUL EVENT
     # ==========================
 
-    judul = f"🎭 {nama_show}"
+    judul = f" {nama_show}"
 
     if ada_gita:
-        judul = f"🌸 {judul}"
+        judul = f"⭐ {judul}"
 
     # ==========================
     # WARNA CALENDAR
@@ -310,8 +310,8 @@ for item in items:
     if ada_gita:
 
         pesan = (
-            "🌸 GITA ALERT 🌸\n\n"
-            f"🎭 {nama_show}\n"
+            "⭐ GITA ALERT ⭐\n\n"
+            f" {nama_show}\n"
             f"📅 {tanggal.group(1)}\n"
             f"🕒 {jam.group(1)} WIB\n\n"
             "✅ Sudah masuk Google Calendar"
@@ -321,7 +321,7 @@ for item in items:
 
         pesan = (
             "📅 Jadwal Theater Baru\n\n"
-            f"🎭 {nama_show}\n"
+            f" {nama_show}\n"
             f"📅 {tanggal.group(1)}\n"
             f"🕒 {jam.group(1)} WIB"
         )
