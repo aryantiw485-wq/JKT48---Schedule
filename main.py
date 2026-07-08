@@ -182,7 +182,6 @@ for item in items:
     )
 
     if not (show and tanggal and jam):
-
         print("⚠️ Format tweet tidak cocok")
         continue
 
@@ -194,10 +193,20 @@ for item in items:
 
     nama_show = show.group(1)
 
-    ada_gita = (
-        "gita"
-        in member_list.lower()
-    )
+    ada_gita = "gita" in member_list.lower()
+
+    # ==========================
+    # JUDUL EVENT
+    # ==========================
+
+    judul = f"🎭 {nama_show}"
+
+    if ada_gita:
+        judul = f"🌸 {judul}"
+
+    # ==========================
+    # WARNA CALENDAR
+    # ==========================
 
     warna = "8"
 
@@ -212,7 +221,6 @@ for item in items:
 
     elif "Cara Meminum Ramune" in nama_show:
         warna = "5"
-        
 
     waktu_mulai = ubah_tanggal(
         tanggal.group(1),
@@ -231,27 +239,27 @@ for item in items:
         ),
         "colorId": warna,
         "start": {
-             "dateTime": waktu_mulai,
-             "timeZone": "Asia/Jakarta"
+            "dateTime": waktu_mulai,
+            "timeZone": "Asia/Jakarta"
         },
         "end": {
             "dateTime": waktu_selesai,
             "timeZone": "Asia/Jakarta"
         },
         "reminders": {
-             "useDefault": False,
-             "overrides": [
-                 {
-                     "method": "popup",
-                     "minutes": 1440
-                 },
-                 {
+            "useDefault": False,
+            "overrides": [
+                {
+                    "method": "popup",
+                    "minutes": 1440
+                },
+                {
                     "method": "popup",
                     "minutes": 60
-                 }
-             ]
-         }
-      }
+                }
+            ]
+        }
+    }
 
     existing_events = service.events().list(
         calendarId=calendar_id,
@@ -260,32 +268,21 @@ for item in items:
 
     event_ditemukan = False
 
-    for old_event in existing_events.get(
-        "items",
-        []
-    ):
+    for old_event in existing_events.get("items", []):
 
-        old_start = (
-            old_event.get(
-                "start",
-                {}
-            ).get(
-                "dateTime"
-            )
-        )
+        old_start = old_event.get(
+            "start",
+            {}
+        ).get("dateTime")
 
-        old_summary = (
-            old_event.get(
-                "summary",
-                ""
-            )
+        old_summary = old_event.get(
+            "summary",
+            ""
         )
 
         if (
             old_start == waktu_mulai
-            and
-            nama_show.lower()
-            in old_summary.lower()
+            and nama_show.lower() in old_summary.lower()
         ):
 
             service.events().update(
@@ -300,34 +297,35 @@ for item in items:
             event_ditemukan = True
             break
 
-if not event_ditemukan:
+    if not event_ditemukan:
 
-   created = service.events().insert(
-       calendarId=calendar_id,
-       body=event
-   ).execute()
+        created = service.events().insert(
+            calendarId=calendar_id,
+            body=event
+        ).execute()
 
-   print("🎉 Event baru dibuat")
-   print(created["htmlLink"])
+        print("🎉 Event baru dibuat")
+        print(created["htmlLink"])
 
-if ada_gita:
+    if ada_gita:
 
-    pesan = (
-        "🌸 GITA ALERT 🌸\n\n"
-        f"🎭 {nama_show}\n"
-        f"📅 {tanggal.group(1)}\n"
-        f"🕒 {jam.group(1)} WIB\n\n"
-        "✅ Sudah masuk Google Calendar"
-    )
+        pesan = (
+            "🌸 GITA ALERT 🌸\n\n"
+            f"🎭 {nama_show}\n"
+            f"📅 {tanggal.group(1)}\n"
+            f"🕒 {jam.group(1)} WIB\n\n"
+            "✅ Sudah masuk Google Calendar"
+        )
 
-else:
+    else:
 
-    pesan = (
-        "📅 Jadwal Theater Baru\n\n"
-        f"🎭 {nama_show}\n"
-        f"📅 {tanggal.group(1)}\n"
-        f"🕒 {jam.group(1)} WIB"
-    )
+        pesan = (
+            "📅 Jadwal Theater Baru\n\n"
+            f"🎭 {nama_show}\n"
+            f"📅 {tanggal.group(1)}\n"
+            f"🕒 {jam.group(1)} WIB"
+        )
 
-kirim_telegram(pesan)
+    kirim_telegram(pesan)
+
 print("\n✅ Sinkronisasi selesai")
