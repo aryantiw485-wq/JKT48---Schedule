@@ -120,7 +120,7 @@ print("✅ Google Calendar siap")
 
 print("🔄 Mengambil RSS Moshi...")
 
-rss_url = "https://nitter.net/moshi2jkt48/rss"
+rss_url = "https://rsshub.yfi.moe/twitter/user/moshi2jkt48"
 
 response = requests.get(
     rss_url,
